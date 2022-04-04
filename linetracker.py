@@ -35,22 +35,25 @@ def talker():
     mcp = Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
 
 
-    print('Reading MCP3008 values, press Ctrl-C to quit...')
+    #print('Reading MCP3008 values, press Ctrl-C to quit...')
     # Print nice channel column headers.
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} |'.format(*range(8)))
-    print('-' * 57)
+    #print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} |'.format(*range(8)))
+    #print('-' * 57)
     # Main program loop.
-    while True:
-        # Read all the ADC channel values in a list.
-        values = [0]*5
-        for i in range(5):
-            # The read_adc function will get the value of the specified channel (0-7).
-            values[i] = mcp.read_adc(i)
+    # Read all the ADC channel values in a list.
+    values = [0]*5
+    for i in range(5):
+        # The read_adc function will get the value of the specified channel (0-7).
+        values[i] = mcp.read_adc(i)
         # Print the ADC values.
-        print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} |'.format(*values))
-        # Pause for half a second.
+        #print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} |'.format(*values))
+            #print(values)
     
-    pub.publish(values[i])
+    print(values)
+    
+    my_msg = Float32MultiArray()
+    my_msg.data = values
+    pub.publish(my_msg)
 
     rate.sleep()
     
