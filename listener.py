@@ -70,8 +70,6 @@ def Tilt(pca,angle):
     duty = (((angle+offset)/180)*6553)+6553
     pca.channels[5].duty_cycle= math.floor(duty)
     
-def Motor_Speed2(pca,int_value):
-    pca.channels[7].duty_cycle = int_value
 
 #Initialize Listener Variables
 #global distance
@@ -80,6 +78,7 @@ yAccel = None
 xAccel = None
 zAccel = None
 lineTrack = None
+cX = None
 
 # myvar = None
 # counter = 0
@@ -108,7 +107,6 @@ def callbackUltra(data):
     #print(distance)
     
     
-    
 def callbackAccel(data):
     rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data.data)
     global xAccel
@@ -119,8 +117,12 @@ def callbackAccel(data):
 def callbackTracker(data):
     rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data.data)
     global lineTrack
-    print(data.data)
     lineTrack = data.data
+    
+def callbackCamera(data):
+    rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data.data)
+    global cX
+    cX = data.data
 
 
 def listener():
@@ -130,31 +132,48 @@ def listener():
 # 
 #     rospy.Subscriber('accel_topic', Float32, callbackAccel)
     
+    rospy.init_node('listener', anonymous=True)
+
+    rospy.Subscriber('ultra_topic', Float32, callbackUltra)
+    
+    
     #rospy.init_node('listener', anonymous=True)
 
-    #rospy.Subscriber('ultra_topic', Float32, callbackUltra)
+    #rospy.Subscriber('linetracker_topic', Float32MultiArray, callbackTracker)
     
     
     rospy.init_node('listener', anonymous=True)
 
-    rospy.Subscriber('linetracker_topic', Float32MultiArray, callbackTracker)
-    
-    #print(distance)
-    count = 0
-    while True:
-        #print(distance)
-        #print(lineTrack)
-        time.sleep(1/5)
-        count = count + 1
-        
-        
-        if distance is not None:
-            
-            if distance < 7:
-                Motor_Speed(pca,0)
-        
-        if count == 50:
-            break
+    rospy.Subscriber('camera_topic', Float32, callbackCamera)
+
+#print(lineTrack)
+    try:
+       count = 0
+       while True:
+           #print(distance)
+           #print(lineTrack)
+           #print(cX)
+           time.sleep(1/10)
+           count = count + 1
+
+           spacing = 75
+
+           if distance is not None and cX is not None:
+               if distance > spacing:
+                  if cX < 310:
+                     Steering(pca,100)
+                  elif cX > 330:
+                     Steering(pca, 80)
+                  else:
+                     Steering(pca,90)
+               else:
+                  Motor_Speed(pca,0.00)
+                  Steering(pca,120)
+                  time.sleep(2)
+                
+    except KeyboardInterrupt:
+      Motor_Speed(pca,0)
+      Steering(pca,90)
 #     rospy.init_node('listener', anonymous=True)
 # 
 #     rospy.Subscriber('tracker_topic', Float32, callbackTracker)
@@ -198,6 +217,7 @@ if __name__ == '__main__':
 #     print("Stopped")
 #     time.sleep(3)
 
-    #Motor_Speed(pca,0.2)
+    Motor_Speed(pca,0)
+    Steering(pca,90)
 
     listener()
