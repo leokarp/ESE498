@@ -12,6 +12,7 @@ from adafruit_pca9685 import PCA9685
 import time
 import adafruit_motor.servo
 import math
+import keyboard
 
 def Servo_Motor_Initialization():
     # Create busio i2C bus instance to communicate with driver.
@@ -147,33 +148,40 @@ def listener():
     rospy.Subscriber('camera_topic', Float32, callbackCamera)
 
 #print(lineTrack)
-    try:
-       count = 0
-       while True:
-           #print(distance)
-           #print(lineTrack)
-           #print(cX)
-           time.sleep(1/10)
-           count = count + 1
+    count = 0
+    while True:
+         #print(distance)
+         #print(lineTrack)
+        #print(cX)
+        time.sleep(1/10)
+        count = count + 1
 
-           spacing = 75
+        spacing = 150
+        #distance = 101
 
-           if distance is not None and cX is not None:
-               if distance > spacing:
-                  if cX < 310:
-                     Steering(pca,100)
-                  elif cX > 330:
-                     Steering(pca, 80)
-                  else:
-                     Steering(pca,90)
-               else:
-                  Motor_Speed(pca,0.00)
-                  Steering(pca,120)
-                  time.sleep(2)
+        if cX is not None:# and distance is not None:
+            if distance > spacing:
+                if cX < 310:
+                     Steering(pca,95) #95
+                elif cX > 330:
+                    Steering(pca, 85) #85
+                else:
+                    Steering(pca,90)
+            else:
+                #Motor_Speed(pca,0.15)
+                Steering(pca,135) #135
+                time.sleep(1.75) # 1.75
+        
+        if count==1000: 
+            print('stopped')
+            break  # finishing the loop
+                    
+ 
+
+    Motor_Speed(pca,0)
+    Steering(pca,90)
+            
                 
-    except KeyboardInterrupt:
-      Motor_Speed(pca,0)
-      Steering(pca,90)
 #     rospy.init_node('listener', anonymous=True)
 # 
 #     rospy.Subscriber('tracker_topic', Float32, callbackTracker)
@@ -185,39 +193,9 @@ def listener():
 
 if __name__ == '__main__':
     pca=Servo_Motor_Initialization()
-#     print("Motor Initialized")
-#     
-#     m = 1
-# 
-#     pca.channels[m].duty_cycle = 13107
-#     time.sleep(3)
-#     pca.channels[m].duty_cycle = 9830
-#     time.sleep(3)
-#     pca.channels[m].duty_cycle = 6553
-#     time.sleep(3)
-#     pca.channels[m].duty_cycle = 9830
-# 
-#     Motor_Start(pca)
-#     print("Motor Started")
-#     time.sleep(3)
-# 
-#     Motor_Speed(pca,0.2)
-#     print("Moving Forward")
-#     time.sleep(3)
-# 
-#     Motor_Speed(pca,0.15)
-#     print("Stopped")
-#     time.sleep(3)
-# 
-#     Motor_Speed(pca,0.1)
-#     print("Moving Backwards")
-#     time.sleep(3)
-# 
-#     Motor_Speed(pca,0.15)
-#     print("Stopped")
-#     time.sleep(3)
-
-    Motor_Speed(pca,0)
+    Motor_Speed(pca,0.15) #0.15
     Steering(pca,90)
 
     listener()
+
+        
