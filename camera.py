@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import rospy
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32MultiArray
 import RPi.GPIO as GPIO
 import sys
 import time
@@ -19,7 +19,7 @@ global cY
 cap = cv.VideoCapture(0)
 
 def talker():
-    pub = rospy.Publisher('camera_topic', Float32, queue_size = 1)
+    pub = rospy.Publisher('camera_topic', Float32MultiArray, queue_size = 1)
     rospy.init_node('camera_node', anonymous  = True)
     rate = rospy.Rate(10)
     
@@ -27,9 +27,9 @@ def talker():
     _, frame = cap.read()
     # Convert BGR to HSV
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-    # define range of blue color in HSV
-    lower_blue = np.array([130,50,50])
-    upper_blue = np.array([150,255,255])
+    # define range of purple color in HSV
+    lower_blue = np.array([120,100,0])
+    upper_blue = np.array([160,255,255])
     # Threshold the HSV image to get only blue colors
     mask = cv.inRange(hsv, lower_blue, upper_blue)
     # Bitwise-AND mask and original image
@@ -52,8 +52,12 @@ def talker():
     cv.destroyAllWindows()
     
    #------------------------------
-    print(cX)
-    pub.publish(cX)
+    c = [cX, cY]
+    print(c)
+    
+    my_msg = Float32MultiArray()
+    my_msg.data = c
+    pub.publish(my_msg)
     
     rate.sleep()
 

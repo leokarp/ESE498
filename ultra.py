@@ -9,7 +9,7 @@ import busio
 import smbus
 
 global distArray
-distArray = [1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]
+distArray = [1200, 1200, 1200, 1200, 1200]#, 1200, 1200]
 def talker():
    #Needed for publisher
     counter = 0
@@ -92,11 +92,11 @@ def talker():
         #print(counter)
         counter = counter + 1
     
-        if counter == 10:
+        if counter == 5:
             counter = 0
             
     
-        true_distance = (distArray[0]+distArray[1]+distArray[2]+distArray[3]+distArray[4]+distArray[5]+distArray[6]+distArray[7]+distArray[8]+distArray[9])/10
+        true_distance = (distArray[0]+distArray[1]+distArray[2]+distArray[3]+distArray[4])/5#+distArray[5]+distArray[6])/7
         print(true_distance)
         pub.publish(true_distance)
 

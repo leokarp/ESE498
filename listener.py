@@ -14,6 +14,7 @@ import adafruit_motor.servo
 import math
 import keyboard
 
+
 def Servo_Motor_Initialization():
     # Create busio i2C bus instance to communicate with driver.
     i2c_bus = busio.I2C(SCL,SDA)
@@ -80,6 +81,7 @@ xAccel = None
 zAccel = None
 lineTrack = None
 cX = None
+cY = None
 
 # myvar = None
 # counter = 0
@@ -123,7 +125,10 @@ def callbackTracker(data):
 def callbackCamera(data):
     rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data.data)
     global cX
-    cX = data.data
+    global cY
+    c = data.data
+    cX = c[0]
+    cY = c[1]
 
 
 def listener():
@@ -145,32 +150,47 @@ def listener():
     
     rospy.init_node('listener', anonymous=True)
 
-    rospy.Subscriber('camera_topic', Float32, callbackCamera)
+    rospy.Subscriber('camera_topic', Float32MultiArray, callbackCamera)
 
 #print(lineTrack)
     count = 0
+    #TicToc = TicTocGenerator()
+    tic = time.time()
     while True:
-         #print(distance)
-         #print(lineTrack)
-        #print(cX)
+        #print(distance)
+        #print(lineTrack)
+        #print([cX, cY])
         time.sleep(1/10)
         count = count + 1
 
-        spacing = 150
+        spacing = 250
         #distance = 101
-
-        if cX is not None:# and distance is not None:
-            if distance > spacing:
+        toc =  time.time() - tic
+        #print(toc)
+        if cX is not None and distance is not None and cY is not None:
+            if cY < 95: # and distance < spacing:
+                Steering(pca,135)
+                time.sleep(1.75)
+            else:
                 if cX < 310:
                      Steering(pca,95) #95
                 elif cX > 330:
                     Steering(pca, 85) #85
                 else:
                     Steering(pca,90)
-            else:
-                #Motor_Speed(pca,0.15)
-                Steering(pca,135) #135
-                time.sleep(1.75) # 1.75
+#             if distance > max_spacing and distance < min_spacing:
+#                 if cX < 310:
+#                      Steering(pca,95) #95
+#                 elif cX > 330:
+#                     Steering(pca, 85) #85
+#                 else:
+#                     Steering(pca,90)
+#             else:
+#                #if toc > 30: #15
+#             #Motor_Speed(pca,0.15)
+#                 Steering(pca,135) #135
+#                 time.sleep(1.75) # 1.75
+#                 tic = time.time()
         
         if count==1000: 
             print('stopped')
@@ -195,7 +215,7 @@ if __name__ == '__main__':
     pca=Servo_Motor_Initialization()
     Motor_Speed(pca,0.15) #0.15
     Steering(pca,90)
-
+   
     listener()
 
         
