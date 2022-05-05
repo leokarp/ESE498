@@ -9,20 +9,23 @@ global cY
 
 PiCamera.resolution = (640, 480)
 
-PiCamera.shutter_speed = 100
+#PiCamera.shutter_speed = 100
 
-PiCamera.crop = (100, 100, 100, 100)
+#PiCamera.crop = (100, 100, 100, 100)
+
+# This code is adapted from code found at the following URL: https://stackoverflow.com/questions/24892615/tracking-multiple-objects-by-color-opencv-2-x
 
 cap = cv.VideoCapture(0)
 
 while(1):
     # Take each frame
     _, frame = cap.read()
+    frame = frame[:240,159:479,:]
     # Convert BGR to HSV
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-    # define range of blue color in HSV
-    lower_blue = np.array([120,100,0]) #120
-    upper_blue = np.array([160,255,255]) #160
+    # define range of blue color in HSV - S INCREASES WHEN IT GETS SUNNY!!!
+    lower_blue = np.array([145,95,70])
+    upper_blue = np.array([175,170,155])#160
     # Threshold the HSV image to get only blue colors
     mask = cv.inRange(hsv, lower_blue, upper_blue)
     # Bitwise-AND mask and original image

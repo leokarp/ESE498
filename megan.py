@@ -8,6 +8,10 @@ from board import SCL, SDA
 import time
 from adafruit_pca9685 import PCA9685
 
+# This code is adapted from code from a previous semester's pi car project by Meagan Konst and Natalia Castillo
+# https://github.com/nataliacastillo/ESE498-Castillo_Konst/blob/main/software/motor.py
+
+
 #signal.signal(signal.SIGINT, signal.SIG_IGN)
 # KEY: Forward = 20%, Backwards = 10%, Stop/Neutral = 15%
 
